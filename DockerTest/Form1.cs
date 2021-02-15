@@ -66,11 +66,9 @@ namespace DockerTest
 
         private async void BindToOriginContainersCombo()
         {
+            _sourceDockerClient = new DockerClientConfiguration(new Uri($"http://{TxtBxDockerAddress.Text}:2375")).CreateClient();
             _containers = await _sourceDockerClient.Containers.ListContainersAsync(new ContainersListParameters { All = true });
-            
-
             var bindingSource = new BindingSource { DataSource = _containers.Select(item => item.Names[0]).ToList() };
-
             ComboBxOriginContainers.DataSource = bindingSource.DataSource;
         }
 
