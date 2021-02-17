@@ -42,8 +42,8 @@ namespace DockerTest
         {
             var progress = new Progress<JSONMessage>();
             var imageFileStream = new FileStream(TxtBxImagePath.Text, FileMode.Open);
-            await _sourceDockerClient.Images.LoadImageAsync(new ImageLoadParameters() { Quiet = false }, imageFileStream,
-                progress);
+            _sourceDockerClient.Images.LoadImageAsync(new ImageLoadParameters() { Quiet = false }, imageFileStream,
+                progress).Wait();
         }
         private async void BtnSubmit_Click(object sender, EventArgs e)
         {
@@ -123,6 +123,7 @@ namespace DockerTest
                     var response =
                         await _sourceDockerClient.Containers.CreateContainerAsync(parameters);
                     await _sourceDockerClient.Containers.StartContainerAsync(response.ID, new ContainerStartParameters());
+                    MessageBox.Show("container Done");
                 }
 
                 if (InvokeRequired)
@@ -138,6 +139,16 @@ namespace DockerTest
             }
             catch (Exception exception)
             {
+                if (InvokeRequired)
+                {
+
+                    Invoke(new MethodInvoker(delegate { Enabled = true; }));
+                }
+
+                else
+                {
+                    Enabled = true;
+                }
                 MessageBox.Show(exception.Message, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             
@@ -145,7 +156,7 @@ namespace DockerTest
 
         //private string GetIp()
         //{
-        //    var hostName = Dns.GetHostName(); 
+        //    var hostName = Dns.GetHostName();
         //    var myIP = Dns.GetHostByName(hostName).AddressList[0].ToString();
         //    return myIP;
         //}
